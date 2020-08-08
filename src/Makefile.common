@@ -1,0 +1,21 @@
+sysrq_firefoxdir = @moduledir@
+KERNEL_LOCATION = @kerneldir@
+KBUILD_VERBOSE = 1
+MOD_DEVDIR = $(PWD)
+ARCH = x86_64
+CROSS_COMPILE	=
+
+sysrq_firefox_CFLAGS = -g -I/usr/realtime/include -I/usr/include/ -ffast-math -mhard-float
+
+export sysrq_firefox_CFLAGS sysrq_firefox_DATA
+
+$(sysrq_firefox_DATA): $(automake_dummy_SOURCES)
+	mv Makefile Makefile.automake
+	cp Makefile.kernel Makefile
+	$(MAKE) -C $(KERNEL_LOCATION) M=$(PWD) modules \
+		KBUILD_VERBOSE=$(KBUILD_VERBOSE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+	mv Makefile.automake Makefile
+
+CLEANFILES = $(sysrq_firefox_DATA) .$(sysrq_firefox_DATA).{cmd,flags} .$(sysrq_firefox_DATA:.o=.@kernelext@).cmd \
+	$(sysrq_firefox_DATA:.o=.mod.c) .$(sysrq_firefox_DATA:.o=.mod.o.cmd) $(sysrq_firefox_DATA:.o=.@kernelext@) \
+	Modules.symvers *~
